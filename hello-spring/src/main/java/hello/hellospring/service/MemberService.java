@@ -27,16 +27,24 @@ public class MemberService {
      */
     public Long join(Member member) {
         // 같은 이름의 중복 회원x
-        validateDuplicateMember(member); // 중복 회원 검증
+        long start = System.currentTimeMillis();
+
 
         //Optional<Member> result = memberRepository.findByName(member.getName());
 //        result.ifPresent(member -> {//if null이 아니면
 //            throw new IllegalStateException("이미 존재하는 회원입니다.");
 //        }); 아래와 같이 줄여서 하기
         //result.orElseGet(); 얘는 별도로 orElseGet의 사용법 -> 값이 널이면 어떠한 메소드 실행 등
+        try {
+            validateDuplicateMember(member); // 중복 회원 검증
+            memberRepository.save(member);
+            return member.getId();
+        }finally {
+            long finish = System.currentTimeMillis();
+            long timeMs = finish - start;
+            System.out.println("join = " + timeMs + "ms");
+        }
 
-        memberRepository.save(member);
-        return member.getId();
     }
 
     private void validateDuplicateMember(Member member) {
@@ -50,7 +58,16 @@ public class MemberService {
      * 전체 회원 조회
      */
     public List<Member> findMembers(){
-        return memberRepository.findAll();
+        long start = System.currentTimeMillis();
+        try{
+            return memberRepository.findAll();
+        }finally {
+            long finish = System.currentTimeMillis();
+            long timeMs = finish - start;
+            System.out.println("findMembers = " + timeMs + "ms");
+        }
+
+
     }
 
     public Optional<Member> findOne(Long memberId){
